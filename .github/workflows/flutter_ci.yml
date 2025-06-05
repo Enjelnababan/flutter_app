@@ -1,0 +1,36 @@
+name: Flutter CI/CD
+
+on:
+  push:
+    branches: [main] # jalankan saat push ke branch main
+  pull_request:
+    branches: [main] # jalankan saat PR ke main
+
+jobs:
+  build-and-test:
+    name: Build & Test
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: 🧾 Checkout kode
+      uses: actions/checkout@v3
+
+    - name: 🚀 Setup Flutter
+      uses: subosito/flutter-action@v2
+      with:
+        flutter-version: '3.22.1'  # Ganti ke versi Flutter kamu
+
+    - name: 📦 Install Dependencies
+      run: flutter pub get
+
+    - name: 🧪 Run Unit & Widget Tests
+      run: flutter test
+
+    - name: 🛠️ Build APK Release
+      run: flutter build apk --release
+
+    - name: 📤 Upload APK Artifact
+      uses: actions/upload-artifact@v3
+      with:
+        name: app-release
+        path: build/app/outputs/flutter-apk/app-release.apk
