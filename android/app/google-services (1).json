@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "767616291697",
+    "project_id": "cengkeh-ce97a",
+    "storage_bucket": "cengkeh-ce97a.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:767616291697:android:a69dd4b193c8a8b5551cd0",
+        "android_client_info": {
+          "package_name": "com.example.cengkeh"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC0hJ-hF-gG0htKPHHtxyyt4mSB6m0jGyY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
