@@ -3,7 +3,7 @@ name: Build Flutter Android APK and Upload to GitHub Releases
 on:
   push:
     branches:
-      - main  # atau ganti dengan branch tempat kamu kerja
+      - gh-pages  # atau ganti dengan branch tempat kamu kerja
 
 jobs:
   build:
