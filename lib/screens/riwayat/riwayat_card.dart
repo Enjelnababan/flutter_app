@@ -4,7 +4,7 @@ class RiwayatCard extends StatelessWidget {
   const RiwayatCard({super.key});
 
   @override
-  Widget build(BuildContext context) {
+   Widget build(BuildContext context) {
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       padding: const EdgeInsets.all(12),
@@ -18,7 +18,7 @@ class RiwayatCard extends StatelessWidget {
           ClipRRect(
             borderRadius: BorderRadius.circular(8),
             child: Image.asset(
-              'assets/images/cengkeh.jpg',
+              'assets/images/cengkeh.png',
               width: 80,
               height: 80,
               fit: BoxFit.cover,

@@ -12,14 +12,6 @@ void main() {
 
     await tester.pumpAndSettle();
 
-    // Cetak semua widget Text yang ditemukan untuk debug
-    final textWidgets = find.byType(Text);
-    final textElements = tester.widgetList<Text>(textWidgets);
-    for (final text in textElements) {
-      print('📝 Found text: "${text.data}"');
-    }
-
-    // Tes utama
     expect(find.text('Riwayat'), findsOneWidget);
   });
 }

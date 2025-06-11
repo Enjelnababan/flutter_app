@@ -6,7 +6,7 @@ plugins {
 }
 
 android {
-    namespace = "com.example.cengkeh"
+    namespace  'com.example.cengkeh'
     compileSdkVersion = 35
     ndkVersion = flutter.ndkVersion
 
