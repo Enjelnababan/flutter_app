@@ -3,7 +3,7 @@ name: Build Flutter Android APK and Upload to GitHub Releases
 on:
   push:
     branches:
-      - gh-pages  # Ganti sesuai branch utama kamu, misalnya 'main' jika pakai 'main'
+      - gh-pages  # Ganti dengan 'main' jika kamu memakai branch main
 
 jobs:
   build:
@@ -13,27 +13,33 @@ jobs:
     - name: Checkout Repository
       uses: actions/checkout@v3
 
-    - name: Set up Flutter
+    - name: Setup Flutter
       uses: subosito/flutter-action@v2
       with:
         channel: stable
 
-    - name: Cache Flutter and Gradle
-      uses: actions/cache@v3
-      with:
-        path: |
-          ~/.pub-cache
-          ~/.gradle
-        key: ${{ runner.os }}-flutter-${{ hashFiles('**/pubspec.yaml') }}
-        restore-keys: |
-          ${{ runner.os }}-flutter
-
-    - name: Install dependencies (with retry)
+    - name: Enable Gradle Daemon Performance
       run: |
-        for i in 1 2 3; do flutter pub get && break || sleep 10; done
+        echo "org.gradle.daemon=true" >> gradle.properties
+        echo "org.gradle.jvmargs=-Xmx2048m" >> gradle.properties
 
-    - name: Build APK
-      run: flutter build apk --release
+    - name: Retry flutter pub get (up to 5x)
+      run: |
+        for i in 1 2 3 4 5; do
+          echo "Attempt $i: flutter pub get"
+          flutter pub get && break
+          echo "Failed attempt $i, retrying in 15 seconds..."
+          sleep 15
+        done
+
+    - name: Retry flutter build apk (up to 3x)
+      run: |
+        for i in 1 2 3; do
+          echo "Attempt $i: flutter build apk --release"
+          flutter build apk --release && break
+          echo "Failed attempt $i, retrying in 20 seconds..."
+          sleep 20
+        done
 
     - name: Create GitHub Release
       id: create_release
@@ -41,11 +47,12 @@ jobs:
       with:
         tag_name: v${{ github.run_number }}
         name: Release v${{ github.run_number }}
-        body: APK built automatically from GitHub Actions
+        body: |
+          APK build for Android release from branch gh-pages
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-    - name: Upload APK to Release
+    - name: Upload APK to GitHub Release
       uses: softprops/action-gh-release@v1
       with:
         files: build/app/outputs/flutter-apk/app-release.apk
