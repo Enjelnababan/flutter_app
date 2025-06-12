@@ -3,7 +3,7 @@ name: Build Flutter Android APK and Upload to GitHub Releases
 on:
   push:
     branches:
-      - main  # Ganti dengan 'main' jika kamu memakai branch main
+      - main  # Ubah ke gh-pages jika kamu tetap ingin pakai gh-pages (tidak disarankan)
 
 jobs:
   build:
@@ -18,37 +18,25 @@ jobs:
       with:
         channel: stable
 
-    - name: Enable Gradle Daemon Performance
-      run: |
-        echo "org.gradle.daemon=true" >> gradle.properties
-        echo "org.gradle.jvmargs=-Xmx2048m" >> gradle.properties
+    - name: Install dependencies
+      run: flutter pub get
 
-    - name: Retry flutter pub get (up to 5x)
-      run: |
-        for i in 1 2 3 4 5; do
-          echo "Attempt $i: flutter pub get"
-          flutter pub get && break
-          echo "Failed attempt $i, retrying in 15 seconds..."
-          sleep 15
-        done
+    - name: Build APK
+      run: flutter build apk --release
 
-    - name: Retry flutter build apk (up to 3x)
+    - name: Create Git Tag
       run: |
-        for i in 1 2 3; do
-          echo "Attempt $i: flutter build apk --release"
-          flutter build apk --release && break
-          echo "Failed attempt $i, retrying in 20 seconds..."
-          sleep 20
-        done
+        git config user.name "github-actions[bot]"
+        git config user.email "github-actions[bot]@users.noreply.github.com"
+        git tag v${{ github.run_number }}
+        git push origin v${{ github.run_number }}
 
     - name: Create GitHub Release
-      id: create_release
       uses: softprops/action-gh-release@v1
       with:
         tag_name: v${{ github.run_number }}
         name: Release v${{ github.run_number }}
-        body: |
-          APK build for Android release from branch gh-pages
+        body: APK build for Android release
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
@@ -58,4 +46,3 @@ jobs:
         files: build/app/outputs/flutter-apk/app-release.apk
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        
