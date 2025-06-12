@@ -2,8 +2,11 @@ name: Build Flutter Android APK and Upload to GitHub Releases
 
 on:
   push:
-    tags:
-      - v*
+    branches:
+      - main
+
+permissions:
+  contents: write
 
 jobs:
   build:
@@ -16,7 +19,6 @@ jobs:
     - name: Setup Flutter
       uses: subosito/flutter-action@v2
       with:
-        flutter-version: '3.22.1'  # Gunakan versi Flutter stabil yang kamu pakai
         channel: stable
 
     - name: Install dependencies
@@ -25,9 +27,22 @@ jobs:
     - name: Build APK
       run: flutter build apk --release
 
-    - name: Upload APK to GitHub Releases
+    - name: List APK Directory
+      run: ls -R build/app/outputs/flutter-apk
+
+    - name: Create Git Tag
+      run: |
+        git config user.name "github-actions[bot]"
+        git config user.email "github-actions[bot]@users.noreply.github.com"
+        git tag v${{ github.run_number }}
+        git push origin v${{ github.run_number }}
+
+    - name: Create GitHub Release and Upload APK
       uses: softprops/action-gh-release@v1
       with:
+        tag_name: v${{ github.run_number }}
+        name: Release v${{ github.run_number }}
+        body: APK build for Android release
         files: build/app/outputs/flutter-apk/app-release.apk
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
